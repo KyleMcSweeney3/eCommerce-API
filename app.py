@@ -31,7 +31,7 @@ class Checkout(db.Model):
     currency = db.Column(db.String(3))
 
     def __init__(self, first_name, last_name, email, phone_number, amount, reference, currency):
-        self.id = str(uuid.uuid4())
+        self.id = 'co-' + str(uuid.uuid4())
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
@@ -89,16 +89,15 @@ def update_checkout(id):
 
 class Charge(db.Model):
     id = db.Column(db.String(100), primary_key=True)
-    checkout_id = db.column(db.String(100))
-    state = db.Column(db.String(100))
+    checkout_id = db.Column(db.String(100))
     amount = db.Column(db.Float)
     currency = db.Column(db.String(3))
     reference = db.Column(db.String(100))
     state = db.Column(db.String(30))
 
     def __init__(self, checkout_id, amount, currency, reference):
-        self.id = str(uuid.uuid4())
-        self.checkout_id = checkout_id,
+        self.id = 'ch-' + str(uuid.uuid4())
+        self.checkout_id = checkout_id
         self.amount = amount
         self.currency = currency
         self.reference = reference
@@ -125,6 +124,14 @@ def create_charge():
 
     return checkout_schema.jsonify(new_charge)
 
+
+@app.route('/charges/<id>', methods=['GET'])
+def retrieve_charge(id):
+    charge = Charge.query.get(id)
+    if(charge == None):
+        return jsonify({'Error': 'Charge does not exist'})
+    else: 
+        return checkout_schema.jsonify(charge)
 # Run server
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
