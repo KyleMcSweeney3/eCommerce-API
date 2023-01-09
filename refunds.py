@@ -51,3 +51,8 @@ def create_refund():
 
 @app.route('/refunds/<id>', methods=['GET'])
 def retrieve_refund(id):
+    refund = Refund.query.get(id)
+    if(refund == None):
+        return jsonify({'Error': 'The requested Refund does not exist'})
+    else: 
+        return refund_schema.jsonify(refund)
